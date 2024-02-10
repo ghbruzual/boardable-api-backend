@@ -1,16 +1,15 @@
 import express from "express";
+import { UserParams } from "../models/signupValidation";
+import { createUser } from '../services/signupService';
 
-interface User {
-  username: string;
-  password: string;
-}
-
-const users: User[] = [];
+const users: UserParams[] = [];
 
 const router = express.Router();
 
-router.post('/', (req, res) => {
-  const { username, password } = req.body as User; 
+
+router.post('/', (req, res) =>{
+  createUser(req,res)
+  const { username, password } = req.body as UserParams; 
 
   if (users.some(user => user.username === username)) {
     return res.status(400).json({ error: 'El nombre de usuario ya está en uso.' });
@@ -20,10 +19,11 @@ router.post('/', (req, res) => {
     return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres.' });
   }
   
-  const newUser: User = { username, password };
+  const newUser: UserParams = { username, password };
   users.push(newUser);
 
   return res.status(201).json({ message: 'Usuario creado exitosamente.' });
 });
+
 
 export default router;
